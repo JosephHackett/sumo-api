@@ -1,5 +1,0 @@
-{
-    "env": {
-        "DATABASE_CONNECTION_STRING": "postgressql://"
-    }
-}
