@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
-const dataaccess = require('../dataaccess')
+const db = require('../db')
 
-const kimarite = dataaccess.define(
+const kimarite = db.define(
     'kimarite',
     {
         kimarite_id: {

@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
-const dataaccess = require('../dataaccess');
+const db = require('../db');
 
-const result = dataaccess.define(
+const result = db.define(
     'result_table',
     {
         banzuke_id: {

@@ -26,9 +26,10 @@ router.get('/profile/:rikishiId', (req,res,next) => {
             },
             include: [{
                 model: Result,
-                attributes: ['win', 
+                attributes: [
+                    'win',
                     'loss', 
-                    'abscence', 
+                    'absence', 
                     'draw_hold', 
                     'champion', 
                     'runner_up',
@@ -37,9 +38,9 @@ router.get('/profile/:rikishiId', (req,res,next) => {
                     'technique',
                     'playoff_bout' 
                 ], 
-                where: {
-                    wrestler_id: Sequelize.col('banzuke_line.wrestler_id'),
-                    banzuke_id: Sequelize.col('banzuke_line.banzuke_id')
+                on: {
+                    banzuke_id: Sequelize.where(Sequelize.col("banzuke_line.banzuke_id"), "=", Sequelize.col("result_table.banzuke_id")),
+                    wrestler_id: Sequelize.where(Sequelize.col("banzuke_line.wrestler_id"), "=", Sequelize.col("result_table.wrestler_id"))
                 }
             }],
             where: {

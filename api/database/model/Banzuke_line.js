@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
-const dataaccess = require('../dataaccess');
+const db = require('../db');
+const Result = require('./Result')
 
-const banzuke_line = dataaccess.define(
+const banzuke_line = db.define(
     'banzuke_line',
     {
         banzuke_id: {
@@ -40,5 +41,7 @@ const banzuke_line = dataaccess.define(
         freezeTableName: true, 
         tableName: 'banzuke_line'
     })
+
+banzuke_line.hasOne(Result)
 
 module.exports = banzuke_line;
