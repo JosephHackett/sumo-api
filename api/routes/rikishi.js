@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const morgan = require('morgan');
-const Wrestler = require('../database/model/Wrestler');
+const Wrestler = require('../database/model/Wrestler')
 const Result = require('../database/model/Result')
+const banzuke_line = require('../database/model/Banzuke_line')
+const Sequelize = require('sequelize')
+
 
 router.get('/', (req,res,next) =>{
     res.status(200).json({
@@ -10,30 +13,54 @@ router.get('/', (req,res,next) =>{
     })
 });
 
-router.get('/:rikishiId', (req,res,next) => {
+router.get('/profile/:rikishiId', (req,res,next) => {
     const id = req.params.rikishiId;
-    Wrestler.findByPk(id)
+    Wrestler.findByPk(id, {raw: true})
     .then(rikishi => {
-        res.status(200).json(rikishi.dataValues);
+
+        // only get ranking lines if wrestler exists 
+        banzuke_line.findAll({
+            attributes:{
+                //excludes the wrestler_id becaue we do not need it. 
+                exclude: ['wrestler_id']
+            },
+            include: [{
+                model: Result,
+                attributes: [
+                    'win',
+                    'loss', 
+                    'absence', 
+                    'draw_hold', 
+                    'champion', 
+                    'runner_up',
+                    'fighting_spirit',
+                    'outstanding_performance',
+                    'technique',
+                    'playoff_bout' 
+                ], 
+                on: {
+                    banzuke_id: Sequelize.where(Sequelize.col("banzuke_line.banzuke_id"), "=", Sequelize.col("result_table.banzuke_id")),
+                    wrestler_id: Sequelize.where(Sequelize.col("banzuke_line.wrestler_id"), "=", Sequelize.col("result_table.wrestler_id"))
+                }
+            }],
+            where: {
+                wrestler_id: id
+            },
+            raw: true 
+        })
+        .then(results => {
+            res.status(200).json({
+                rikishi: rikishi,
+                results: results 
+            })
+            
+        })
+        .catch( err => {
+            console.log('error: ', err)
+            res.status(500).json({message: 'An error has occurred'})
+        })
     })
     .catch( err => console.log('error:', err))
 });
- router.get('/results/:rikishiId', (req, res, next) => {
-    const id = req.params.rikishiId;
-    Result.findAll({
-         raw: true, 
-         where: {wrestler_id: id}
-     })
-     .then(results => {
-         res.status(200).json(results)
-     })
-     .catch( err => {
-         console.log('error: ', err)
-         res.status(404).json({
-             message: 'could not find results'
-         })
-     })
- })
-
 
 module.exports = router; 

@@ -1,8 +1,7 @@
 const Sequelize = require('sequelize')
-const dataaccess = require('../dataaccess')
-const Model = Sequelize.Model 
+const db = require('../db')
 
-const wrestler = dataaccess.define(
+const wrestler = db.define(
      'wrestler', {
     //atributes
         wrestler_id: {

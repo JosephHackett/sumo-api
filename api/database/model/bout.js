@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize')
-const dataaccess = require('../dataaccess')
+const db = require('../db')
 
 
-const bout = dataaccess.define(
+const bout = db.define(
     "bout", 
     {
         banzuke_id: {
