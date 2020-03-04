@@ -1,25 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const morgan = require('morgan');
-const Wrestler = require('../database/model/Wrestler')
-const Result = require('../database/model/Result')
-const banzuke_line = require('../database/model/Banzuke_line')
+const Banzuke_line = require('../../database/model/Banzuke_line')
+const Result = require('../../database/model/Result')
 const Sequelize = require('sequelize')
 
-
-router.get('/', (req,res,next) =>{
-    res.status(200).json({
-        message: "Should this return all rikishi indexes?"
-    })
-});
-
-router.get('/profile/:rikishiId', (req,res,next) => {
-    const id = req.params.rikishiId;
-    Wrestler.findByPk(id, {raw: true})
-    .then(rikishi => {
-
-        // only get ranking lines if wrestler exists 
-        banzuke_line.findAll({
+// QueryHelper to hold functions for queries outside the endpoint
+const banzukeQuery = (id) => {
+    return new Promise((resolve, reject) => {
+        Banzuke_line.findAll({
             attributes:{
                 //excludes the wrestler_id becaue we do not need it. 
                 exclude: ['wrestler_id']
@@ -44,23 +30,26 @@ router.get('/profile/:rikishiId', (req,res,next) => {
                 }
             }],
             where: {
-                wrestler_id: id
+                banzuke_id: id 
             },
             raw: true 
         })
-        .then(results => {
-            res.status(200).json({
-                rikishi: rikishi,
-                results: results 
-            })
-            
+        .then(data => {
+            if (!Array.isArray(data) || !data.length) {
+                reject({
+                    message: "array is empty"
+                })
+            }
+            else {
+                resolve(data) 
+            }
         })
-        .catch( err => {
+        .catch(err => { 
             console.log('error: ', err)
-            res.status(500).json({message: 'An error has occurred'})
+            reject({message: "an error has occurred during the query"})
         })
     })
-    .catch( err => console.log('error:', err))
-});
 
-module.exports = router; 
+} 
+
+exports.banzukeQuery = banzukeQuery;
