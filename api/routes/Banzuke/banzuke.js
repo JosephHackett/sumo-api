@@ -12,7 +12,7 @@ router.get('/:banzuke_id', (req, res, next) => {
     const id = req.params.banzuke_id; 
     BanzukeQueryHelper.banzukeQuery(id)
     .then((data) => {
-        res.status(200).json({data})
+        res.status(200).json({banzuke: data})
     })
     .catch(err => {
         console.log(err)
