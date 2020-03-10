@@ -2,8 +2,8 @@ const express = require('express');
 const app = express(); 
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const banzukeRoutes = require('./api/routes/banzuke');
-const rikishiRoutes = require('./api/routes/rikishi');
+const banzukeRoutes = require('./api/routes/Banzuke/banzuke');
+const rikishiRoutes = require('./api/routes/Rikishi/rikishi');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
