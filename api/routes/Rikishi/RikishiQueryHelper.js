@@ -2,6 +2,7 @@ const Wrestler = require('../../database/model/Wrestler')
 const Result = require('../../database/model/Result')
 const banzuke_line = require('../../database/model/Banzuke_line')
 const Sequelize = require('sequelize')
+const Operator = Sequelize.Op
 
 const profileQuery = (id) => {
     return new Promise ((resolve, reject) => {
@@ -61,4 +62,23 @@ const profileQuery = (id) => {
     })
 }
 
+const rikishiSearch = (name) =>{
+    return new Promise ((resolve, reject) => {
+        Wrestler.findAll({
+            attributes:['wrestler_id', 'wname', 'highest_rank', 'dob'],
+            where: {
+                wname: {[Operator.startsWith]: name}
+            }, 
+            raw: true 
+        })
+        .then(results => {
+            resolve(results)
+        })
+        .catch(err => {
+            reject("An error has occured")
+        })
+    })
+}
+
 exports.profileQuery = profileQuery
+exports.rikishiSearch = rikishiSearch
