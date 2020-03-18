@@ -72,9 +72,7 @@ const rikishiSearch = (name) =>{
             raw: true 
         })
         .then(results => {
-            resolve({
-                results: results
-            })
+            resolve(results)
         })
         .catch(err => {
             reject("An error has occured")
