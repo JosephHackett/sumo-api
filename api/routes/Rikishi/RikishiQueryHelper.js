@@ -1,63 +1,34 @@
-const Wrestler = require('../../database/model/Wrestler')
-const Result = require('../../database/model/Result')
-const banzuke_line = require('../../database/model/Banzuke_line')
-const Sequelize = require('sequelize')
-const Operator = Sequelize.Op
+const Wrestler = require('../../database/model/Wrestler');
+const Result = require('../../database/model/Result');
+const WrestlerResults = require('../../database/model/materialized-views/WrestlerResults');
+const banzuke_line = require('../../database/model/Banzuke_line');
+const Sequelize = require('sequelize');
+const Operator = Sequelize.Op;
 
 const profileQuery = (id) => {
     return new Promise ((resolve, reject) => {
-        Wrestler.findByPk(id, {raw: true})
+        Wrestler.findByPk(id, { attributes: {exclude:['height', 'weight']},raw: true})
         .then(rikishi => {
             if (!rikishi) {
                 reject('rikishi could not be located.')
             }
-            // only get ranking lines if wrestler exists 
             else {
-                banzuke_line.findAll({
-                    attributes:{
-                        //excludes the wrestler_id becaue we do not need it. 
-                        exclude: ['wrestler_id']
-                    },
-                    include: [{
-                        model: Result,
-                        attributes: [
-                            'win',
-                            'loss', 
-                            'absence', 
-                            'draw_hold', 
-                            'champion', 
-                            'runner_up',
-                            'fighting_spirit',
-                            'outstanding_performance',
-                            'technique',
-                            'playoff_bout' 
-                        ], 
-                        on: {
-                            banzuke_id: Sequelize.where(Sequelize.col("banzuke_line.banzuke_id"), "=", Sequelize.col("result_table.banzuke_id")),
-                            wrestler_id: Sequelize.where(Sequelize.col("banzuke_line.wrestler_id"), "=", Sequelize.col("result_table.wrestler_id"))
-                        }
-                    }],
-                    where: {
-                        wrestler_id: id
-                    },
-                    raw: true 
+                getResultsById(id)
+                .then( results => {
+                    resolve({
+                        wrestler: rikishi,
+                        results: results
+                    })
                 })
-                .then(results => { 
-                resolve({
-                    rikishi: rikishi,
-                    results: results 
-                })
-                })
-                .catch( err => {
-                resolve({
-                    rikishi: rikishi
-                })
+                .catch(err => {
+                    console.log(err);
+                    reject("An error has occurred");
                 })
             }
         })
         .catch( err => {
             console.log('error:', err)
-            reject("the rikishi does not exist")
+            reject("An error has occurred.")
         })
     })
 }
@@ -80,5 +51,23 @@ const rikishiSearch = (name) =>{
     })
 }
 
-exports.profileQuery = profileQuery
-exports.rikishiSearch = rikishiSearch
+const getResultsById = (id) =>{
+    return new Promise ((resolve, reject) => {
+        WrestlerResults.findAll({
+            where: {wrestler_id: id},
+            raw: true
+        })
+        .then(data => {
+            resolve(data)
+        })
+        .catch(err =>{
+            console.log('error: ', err)
+            reject(err)
+        })
+
+    });
+}
+
+exports.profileQuery = profileQuery;
+exports.rikishiSearch = rikishiSearch;
+exports.getResultsById = getResultsById;
