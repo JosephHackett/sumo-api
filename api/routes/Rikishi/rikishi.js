@@ -20,7 +20,19 @@ router.get('/search/:name', (req, res,next) => {
             message: 'the search could not be completed.'
         })
     })
-})
+});
+
+router.get('/results/:id', (req, res, next) => {
+    const id = req.params.id;
+    RikishiQueryHelper.getResultsById(id)
+    .then(data => {
+        res.status(200).json(data)
+    })
+    .catch(err => {
+        res.status(404).json({message: 'Could not located results.'});
+    })
+});
+
 
 router.get('/profile/:rikishiId', (req,res,next) => {
     const id = req.params.rikishiId;
