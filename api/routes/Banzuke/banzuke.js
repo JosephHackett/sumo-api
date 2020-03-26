@@ -8,6 +8,12 @@ router.get('/',(req, res, next) => {
     });
 });
 
+router.get("/current", (req,res,next) => {
+   BanzukeQueryHelper.currentBanzukeQuery()
+   .then(basho => {res.status(200).json(basho)})
+   .catch(err => {console.log(err)});
+});
+
 router.get('/:banzuke_id', (req, res, next) => {
     const id = req.params.banzuke_id; 
     BanzukeQueryHelper.banzukeQuery(id)

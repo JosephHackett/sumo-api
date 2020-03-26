@@ -1,5 +1,8 @@
 const Banzuke_line = require('../../database/model/Banzuke_line')
 const Result = require('../../database/model/Result')
+const CurrentMakuuchiBanzuke = require("../../database/model/views/mView.currentMakuuchiBanzuke");
+const CurrentJuryoBanzuke = require("../../database/model/views/mView.currentJuryoBanzuke");
+const CurrentBasho = require("../../database/model/views/currentBasho")
 const Sequelize = require('sequelize')
 const Operator = Sequelize.Op
 
@@ -22,6 +25,23 @@ const banzukeQuery = (id) => {
     })
 
 } 
+
+const currentBanzukeQuery = () => {
+    return new Promise ((resolve, reject) => {
+        // first query for current basho (tournament)
+        CurrentBasho.findAll({raw:true})
+        .then(basho => {
+            CurrentMakuuchiBanzuke.findAll({raw:true})
+            .then(makuuchiBanzuke => {
+                CurrentJuryoBanzuke.findAll({raw:true})
+                .then(juryoBanzuke => {
+                    resolve({basho, makuuchiBanzuke, juryoBanzuke});
+                })
+            })
+        })
+        .catch(err => {console.log(err)})
+    })
+}
 
 let query = (id, division) => {
   return new Promise ((resolve, reject) => {
@@ -81,3 +101,4 @@ let query = (id, division) => {
 }
 
 exports.banzukeQuery = banzukeQuery;
+exports.currentBanzukeQuery = currentBanzukeQuery;

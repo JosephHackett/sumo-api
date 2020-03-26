@@ -1,6 +1,6 @@
 const Wrestler = require('../../database/model/Wrestler');
 const Result = require('../../database/model/Result');
-const WrestlerResults = require('../../database/model/materialized-views/WrestlerResults');
+const WrestlerResults = require('../../database/model/views/WrestlerResults');
 const banzuke_line = require('../../database/model/Banzuke_line');
 const Sequelize = require('sequelize');
 const Operator = Sequelize.Op;
@@ -13,17 +13,7 @@ const profileQuery = (id) => {
                 reject('rikishi could not be located.')
             }
             else {
-                getResultsById(id)
-                .then( results => {
-                    resolve({
-                        wrestler: rikishi,
-                        results: results
-                    })
-                })
-                .catch(err => {
-                    console.log(err);
-                    reject("An error has occurred");
-                })
+               resolve(rikishi);
             }
         })
         .catch( err => {

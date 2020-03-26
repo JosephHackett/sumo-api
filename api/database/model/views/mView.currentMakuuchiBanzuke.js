@@ -1,15 +1,14 @@
 const Sequelize = require('sequelize');
 const db = require('../../db');
 
-const WrestlerResults = db.define(
-    "wrestler_results",
+const currentMakuuchiBanzuke = db.define(
+    "current_m_banzuke",
     {
         banzuke_id: {
             type: Sequelize.INTEGER, 
             allowNull: false, 
             primaryKey: true
         },
-
         wrestler_id: {
             type: Sequelize.INTEGER, 
             allowNull: false, 
@@ -21,18 +20,6 @@ const WrestlerResults = db.define(
         },
         rank: {
             type: Sequelize.STRING,
-            allowNull: false
-        },
-        stable: {
-            type: Sequelize.STRING, 
-            allowNull: false
-        },
-        kanji: {
-            type: Sequelize.STRING, 
-            allowNull: false
-        },
-        rank_debut: {
-            type: Sequelize.BOOLEAN, 
             allowNull: false
         },
         win: {
@@ -80,9 +67,8 @@ const WrestlerResults = db.define(
     {
         timestamps: false, 
         freezeTableName: true, 
-        tableName: 'individual_wrestler_results'
+        tableName: 'current_m_banzuke'
     }
-
 )
 
-module.exports = WrestlerResults;
+module.exports = currentMakuuchiBanzuke;
