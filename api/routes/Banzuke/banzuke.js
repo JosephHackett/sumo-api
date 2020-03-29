@@ -11,14 +11,18 @@ router.get('/',(req, res, next) => {
 router.get("/current", (req,res,next) => {
    BanzukeQueryHelper.currentBanzukeQuery()
    .then(basho => {res.status(200).json(basho)})
-   .catch(err => {console.log(err)});
+   .catch(
+       err => {
+           console.log(err)
+           res.status(500).json({message: 'An internal error has occurred.'})
+        });
 });
 
 router.get('/:banzuke_id', (req, res, next) => {
     const id = req.params.banzuke_id; 
-    BanzukeQueryHelper.banzukeQuery(id)
+    BanzukeQueryHelper.banzukeQueryById(id)
     .then((data) => {
-        res.status(200).json({banzuke: data})
+        res.status(200).json(data)
     })
     .catch(err => {
         console.log(err)

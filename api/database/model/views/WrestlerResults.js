@@ -23,6 +23,10 @@ const WrestlerResults = db.define(
             type: Sequelize.STRING, 
             allowNull: false
         },
+        division: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
         rank: {
             type: Sequelize.STRING,
             allowNull: false
